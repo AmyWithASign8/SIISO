@@ -10,24 +10,21 @@ import {
 } from "@mantine/core";
 import MainLayout from "../../../Components/MainLayout";
 import { IconAt } from "@tabler/icons";
-import { useForm } from "@mantine/form";
 import { useRouter } from "next/router";
+import { SubmitHandler, useForm } from "react-hook-form";
 
+type Inputs = {
+  email: string;
+  password: string;
+};
 const SignIn = () => {
-  const form = useForm({
-    initialValues: { email: "", password: "" },
-
-    // functions will be used to validate values at corresponding key
-    validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Некорректный email"),
-      password: (value) =>
-        value.length < 8
-          ? "Длина пароля дожна быть не менее 8 символов"
-          : /[А-Яа-яЁё]/.test(value)
-          ? "В пароле должны быть только латинские буквы"
-          : null,
-    },
-  });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
   const router = useRouter();
 
   const handleSignIn = () => {
@@ -36,7 +33,7 @@ const SignIn = () => {
   return (
     <MainLayout>
       <Container>
-        <form onSubmit={form.onSubmit(handleSignIn)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Center>
             <Text size={40} weight="bold" mt={50} mb={50}>
               Вход в аккаунт
@@ -44,16 +41,26 @@ const SignIn = () => {
           </Center>
           <Input.Wrapper label="Email" required>
             <TextInput
+              error={errors.email && "Некорректный email"}
               icon={<IconAt />}
               placeholder="Your email"
-              {...form.getInputProps("email")}
+              type="email"
+              {...register("email", {
+                required: true,
+                pattern: /^\S+@\S+$/,
+              })}
             />
           </Input.Wrapper>
           <PasswordInput
+            error={errors.password && "Некорректный пароль"}
             placeholder="Password"
             label="Password"
             withAsterisk
-            {...form.getInputProps("password")}
+            {...register("password", {
+              required: true,
+              minLength: 8,
+              pattern: /[^A-Za-z0-9]/,
+            })}
           />
           <Center mt={50}>
             <Button

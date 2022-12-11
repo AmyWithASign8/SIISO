@@ -1,6 +1,7 @@
 import React from "react";
-import { Center, Group, Text } from "@mantine/core";
+import { Center, Group, Switch, Text, useMantineTheme } from "@mantine/core";
 import { Header as MantineHeader } from "@mantine/core";
+import { IconMoonStars, IconSun } from "@tabler/icons";
 
 const HeaderAuth = () => {
   return (
