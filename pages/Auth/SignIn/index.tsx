@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Button,
   Center,
@@ -12,6 +12,7 @@ import MainLayout from "../../../Components/MainLayout";
 import { IconAt } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
+import ThemeContext from "../../../Components/context";
 
 type Inputs = {
   email: string;
@@ -24,12 +25,12 @@ const SignIn = () => {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
   const router = useRouter();
-
   const handleSignIn = () => {
     router.push("/");
   };
+  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignIn;
+
   return (
     <MainLayout>
       <Container>

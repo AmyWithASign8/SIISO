@@ -2,6 +2,7 @@ import Head from "next/head";
 import MainLayout from "../Components/MainLayout";
 import { useRouter } from "next/router";
 import HeaderAuth from "../Components/HeaderAuth";
+import React from "react";
 
 export default function Home() {
   return (
