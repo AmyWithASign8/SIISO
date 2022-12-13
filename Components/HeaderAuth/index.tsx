@@ -1,10 +1,19 @@
 import React, { FC, useContext } from "react";
-import { Center, Group, Switch, Text, useMantineTheme } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Group,
+  Switch,
+  Text,
+  useMantineTheme,
+} from "@mantine/core";
 import { Header as MantineHeader } from "@mantine/core";
 import { IconMoonStars, IconSun } from "@tabler/icons";
 import ThemeContext from "../context";
+import Link from "next/link";
+import { showNotification } from "@mantine/notifications";
 
-const HeaderAuth = () => {
+const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
   // @ts-ignore
   const [theme, setTheme] = useContext(ThemeContext);
 
@@ -12,9 +21,21 @@ const HeaderAuth = () => {
     if (theme == "light") {
       setTheme("dark");
       localStorage.setItem("theme", "dark");
+      showNotification({
+        icon: <IconMoonStars />,
+        radius: "xl",
+        title: "Переключение темы",
+        message: "Сейчас стоит темная тема",
+      });
     } else {
       setTheme("light");
       localStorage.setItem("theme", "light");
+      showNotification({
+        icon: <IconSun />,
+        radius: "xl",
+        title: "Переключение темы",
+        message: "Сейчас стоит светлая тема",
+      });
     }
   };
   const themeMantine = useMantineTheme();
@@ -27,6 +48,28 @@ const HeaderAuth = () => {
           </Text>
         </Center>
         <Group position={"right"}>
+          {isAuth && (
+            <>
+              <Button
+                component={Link}
+                href={"/News"}
+                color={"teal"}
+                size={"md"}
+                mt={15}
+              >
+                Новости
+              </Button>
+              <Button
+                component={Link}
+                href={"/Legends"}
+                color={"teal"}
+                size={"md"}
+                mt={15}
+              >
+                Зал славы
+              </Button>
+            </>
+          )}
           <Switch
             color={theme.colorScheme === "dark" ? "gray" : "dark"}
             onClick={handleTheme}

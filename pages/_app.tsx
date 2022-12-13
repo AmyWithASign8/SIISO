@@ -1,7 +1,8 @@
 import type { AppProps } from "next/app";
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, Notification } from "@mantine/core";
 import React from "react";
 import ThemeContext from "../Components/context";
+import { NotificationsProvider } from "@mantine/notifications";
 
 export default function App({ Component, pageProps }: AppProps) {
   React.useEffect(() => {
@@ -17,7 +18,9 @@ export default function App({ Component, pageProps }: AppProps) {
         withNormalizeCSS
         theme={{ colorScheme: theme, fontFamily: "Nunito, sans-serif" }}
       >
-        <Component {...pageProps} />
+        <NotificationsProvider>
+          <Component {...pageProps} />
+        </NotificationsProvider>
       </MantineProvider>
     </ThemeContext.Provider>
   );

@@ -9,10 +9,11 @@ import {
   TextInput,
 } from "@mantine/core";
 import MainLayout from "../../../Components/MainLayout";
-import { IconAt } from "@tabler/icons";
+import { IconAt, IconLock } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ThemeContext from "../../../Components/context";
+import Link from "next/link";
 
 type Inputs = {
   email: string;
@@ -29,7 +30,7 @@ const SignIn = () => {
   const handleSignIn = () => {
     router.push("/");
   };
-  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignIn;
+  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignIn();
 
   return (
     <MainLayout>
@@ -53,6 +54,7 @@ const SignIn = () => {
             />
           </Input.Wrapper>
           <PasswordInput
+            icon={<IconLock />}
             error={errors.password && "Некорректный пароль"}
             placeholder="Password"
             label="Password"
@@ -75,6 +77,20 @@ const SignIn = () => {
           </Center>
         </form>
       </Container>
+      <Center>
+        <Text>
+          Еще не зарегистрировались?{" "}
+          <Text
+            component={Link}
+            href={"/Auth/SignUp"}
+            color={"teal"}
+            size={18}
+            td={"underline"}
+          >
+            Зарегистрироваться
+          </Text>
+        </Text>
+      </Center>
     </MainLayout>
   );
 };

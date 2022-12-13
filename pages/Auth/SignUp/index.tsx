@@ -10,40 +10,33 @@ import {
   Title,
 } from "@mantine/core";
 import MainLayout from "../../../Components/MainLayout";
-import { IconAt } from "@tabler/icons";
-import { useForm } from "@mantine/form";
+import { IconAt, IconLock, IconUser } from "@tabler/icons";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import { SubmitHandler, useForm } from "react-hook-form";
 
+type Inputs = {
+  nickname: string;
+  email: string;
+  password: string;
+};
 const SignUp = () => {
-  const form = useForm({
-    initialValues: { nickname: "", email: "", password: "" },
-
-    // functions will be used to validate values at corresponding key
-    validate: {
-      nickname: (value) =>
-        /[А-Яа-яЁё]/.test(value)
-          ? "Должны быть только латинские буквы"
-          : value.length <= 0
-          ? "Имя пользователя не может быть пустым"
-          : null,
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Некорректный email"),
-      password: (value) =>
-        value.length < 8
-          ? "Длина пароля дожна быть не менее 8 символов"
-          : /[А-Яа-яЁё]/.test(value)
-          ? "В пароле должны быть только латинские буквы"
-          : null,
-    },
-  });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
   const router = useRouter();
 
   const handleSignUp = () => {
     router.push("/");
   };
+  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignUp();
   return (
     <MainLayout>
       <Container>
-        <form onSubmit={form.onSubmit(handleSignUp)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Center>
             <Text size={40} weight="bold" mt={50} mb={50}>
               Регистрация аккаунта
@@ -51,23 +44,36 @@ const SignUp = () => {
           </Center>
           <Input.Wrapper label="Имя пользователя" required>
             <TextInput
-              icon={<IconAt />}
+              error={errors.nickname && "Некорректное имя пользователя"}
+              icon={<IconUser />}
               placeholder="Введите имя пользователя"
-              {...form.getInputProps("nickname")}
+              {...register("nickname", {
+                required: true,
+              })}
             />
           </Input.Wrapper>
           <Input.Wrapper label="Email" required>
             <TextInput
+              error={errors.email && "Некорректный email"}
               icon={<IconAt />}
               placeholder="Your email"
-              {...form.getInputProps("email")}
+              {...register("email", {
+                required: true,
+                pattern: /^\S+@\S+$/,
+              })}
             />
           </Input.Wrapper>
           <PasswordInput
+            error={errors.password && "Некорректный пароль"}
+            icon={<IconLock />}
             placeholder="Password"
             label="Password"
             withAsterisk
-            {...form.getInputProps("password")}
+            {...register("password", {
+              required: true,
+              minLength: 8,
+              pattern: /[^A-Za-z0-9]/,
+            })}
           />
           <Center mt={50}>
             <Button
@@ -76,11 +82,25 @@ const SignUp = () => {
               size="lg"
               type="submit"
             >
-              Войти
+              Регистрация
             </Button>
           </Center>
         </form>
       </Container>
+      <Center>
+        <Text>
+          У вас уже есть аккаунт?{" "}
+          <Text
+            component={Link}
+            href={"/Auth/SignIn"}
+            color={"teal"}
+            size={18}
+            td={"underline"}
+          >
+            Войти
+          </Text>
+        </Text>
+      </Center>
     </MainLayout>
   );
 };
