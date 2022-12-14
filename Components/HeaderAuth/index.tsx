@@ -3,12 +3,20 @@ import {
   Button,
   Center,
   Group,
+  Menu,
   Switch,
   Text,
   useMantineTheme,
 } from "@mantine/core";
 import { Header as MantineHeader } from "@mantine/core";
-import { IconMoonStars, IconSun } from "@tabler/icons";
+import {
+  IconLogout,
+  IconMoonStars,
+  IconSettings,
+  IconSun,
+  IconTrash,
+  IconUserCircle,
+} from "@tabler/icons";
 import ThemeContext from "../context";
 import Link from "next/link";
 import { showNotification } from "@mantine/notifications";
@@ -24,8 +32,8 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
       showNotification({
         icon: <IconMoonStars />,
         radius: "xl",
-        title: "Переключение темы",
-        message: "Сейчас стоит темная тема",
+        title: "Переключение темы...",
+        message: "Установлена темная тема",
       });
     } else {
       setTheme("light");
@@ -33,8 +41,8 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
       showNotification({
         icon: <IconSun />,
         radius: "xl",
-        title: "Переключение темы",
-        message: "Сейчас стоит светлая тема",
+        title: "Переключение темы...",
+        message: "Установлена светлая тема",
       });
     }
   };
@@ -50,6 +58,32 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
         <Group position={"right"}>
           {isAuth && (
             <>
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <Button
+                    leftIcon={<IconUserCircle />}
+                    color={"teal"}
+                    mt={15}
+                    size={"md"}
+                  >
+                    Аккаунт
+                  </Button>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Label>Действия с аккаунтом</Menu.Label>
+                  <Menu.Item
+                    component={Link}
+                    href={"/Account/AccountSettings"}
+                    icon={<IconSettings size={14} />}
+                  >
+                    Настроить аккаунт
+                  </Menu.Item>
+                  <Menu.Item color="red" icon={<IconLogout size={14} />}>
+                    Выйти из аккаунта
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
               <Button
                 component={Link}
                 href={"/News"}

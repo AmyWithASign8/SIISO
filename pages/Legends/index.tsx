@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { IconArrowRightRhombus } from "@tabler/icons";
 import Link from "next/link";
+import MainLayout from "../../Components/MainLayout";
 
 const Legends = () => {
   const images = [
@@ -19,8 +20,7 @@ const Legends = () => {
     "https://sun9-59.userapi.com/impf/c834302/v834302259/a2789/3zdZBtxlxx8.jpg?size=1386x1040&quality=96&sign=0bb29c2f2bc9f48bb1289d37b2a0c360&type=album",
   ];
   return (
-    <div>
-      <HeaderAuth isAuth={false} />
+    <MainLayout>
       <Group mt={10} ml={30}>
         <Text c={"dimmed"} component={Link} href={"/"}>
           Главная
@@ -58,7 +58,7 @@ const Legends = () => {
           </Card.Section>
         </Card>
       </Container>
-    </div>
+    </MainLayout>
   );
 };
 

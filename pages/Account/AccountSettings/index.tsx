@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Button,
-  Center,
   Container,
   Group,
   Input,
@@ -13,39 +12,38 @@ import Link from "next/link";
 import {
   IconArrowRightRhombus,
   IconCheck,
-  IconNews,
   IconPhoto,
   IconUpload,
-  IconWriting,
+  IconUser,
   IconX,
 } from "@tabler/icons";
-import { Dropzone, IMAGE_MIME_TYPE, DropzoneProps } from "@mantine/dropzone";
+import MainLayout from "../../../Components/MainLayout";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification, updateNotification } from "@mantine/notifications";
-import MainLayout from "../../../Components/MainLayout";
-
 type Inputs = {
-  nameNews: string;
-  description: string;
+  nickname: string;
+  email: string;
+  password: string;
 };
-const CreateNews = () => {
+
+const AccountSettings = () => {
+  const [inputNickName, setInputNickName] =
+    React.useState<string>("ProfileName");
+  const route = useRouter();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-
-  const themeMantine = useMantineTheme();
-
-  const route = useRouter();
-  const handleCreatePost = () => {
+  const saveChanges = () => {
     showNotification({
       id: "load-data",
       loading: true,
-      title: "Загрузка...",
-      message: "Идет загрузка вашего поста",
+      title: "Сохранение изменений...",
+      message: "Идет сохранение ваших изменений",
       autoClose: false,
       disallowClose: true,
       radius: "xl",
@@ -55,19 +53,23 @@ const CreateNews = () => {
       updateNotification({
         id: "load-data",
         color: "teal",
-        title: "Загрузка завершена",
-        message: "Ваш пост успешно загружен",
+        title: "Успешно сохранено",
+        message: "Ваши изменения успешно сохранены",
         icon: <IconCheck size={16} />,
         autoClose: 2000,
         radius: "xl",
       });
     }, 1000);
     setTimeout(() => {
-      route.push("/News");
+      route.push("/");
     }, 1200);
   };
-  const onSubmit: SubmitHandler<Inputs> = (data) => handleCreatePost();
 
+  const clearChanges = () => {
+    setInputNickName("ProfileName");
+  };
+  const themeMantine = useMantineTheme();
+  const onSubmit: SubmitHandler<Inputs> = (data) => saveChanges();
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -75,41 +77,23 @@ const CreateNews = () => {
           Главная
         </Text>
         <IconArrowRightRhombus />
-        <Text c={"dimmed"} component={Link} href={"/News"}>
-          Новости
-        </Text>
-        <IconArrowRightRhombus />
-        <Text color={"teal"}>Создать новость</Text>
+        <Text c={"teal"}>Настройки аккаунта</Text>
       </Group>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Container>
-          <Center>
-            <Text weight={"bold"} size={30}>
-              Панель создания новости
-            </Text>
-          </Center>
-
-          <Input.Wrapper label={"Название новости"} required>
+      <Container>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Input.Wrapper label="Ваше имя">
             <TextInput
-              error={errors.nameNews && "Название не может быть пустым"}
-              placeholder={"Укажите название новости"}
-              icon={<IconNews />}
-              {...register("nameNews", { required: true, maxLength: 50 })}
-            />
-          </Input.Wrapper>
-          <Input.Wrapper label={"Описание новости"}>
-            <TextInput
-              error={
-                errors.description && "Описание не может превышать 250 символов"
-              }
-              {...register("description", {
-                maxLength: 250,
+              error={errors.nickname && "Имя пользователя не может быть пустым"}
+              icon={<IconUser />}
+              placeholder="Введите новое имя пользователя"
+              {...register("nickname", {
+                required: true,
               })}
-              placeholder={"Укажите описание новости"}
-              icon={<IconWriting />}
+              value={inputNickName}
+              onChange={(e) => setInputNickName(e.target.value)}
             />
           </Input.Wrapper>
-          <Input.Wrapper label={"Прикрепление фотографий"}>
+          <Input.Wrapper label={"Изменение аватара"}>
             <Dropzone
               onDrop={(files) => console.log("accepted files", files)}
               onReject={(files) => console.log("rejected files", files)}
@@ -160,20 +144,21 @@ const CreateNews = () => {
               </Group>
             </Dropzone>
           </Input.Wrapper>
-          <Center mt={20}>
-            <Button
-              variant="gradient"
-              gradient={{ from: "teal", to: "lime", deg: 105 }}
-              size="lg"
-              type="submit"
-            >
-              Создать пост
+          <Group position={"center"} mt={50}>
+            <Button color={"gray"} component={Link} href={"/"}>
+              На главную
             </Button>
-          </Center>
-        </Container>
-      </form>
+            <Button color={"red"} onClick={clearChanges}>
+              Сбросить
+            </Button>
+            <Button color={"teal"} type={"submit"}>
+              Сохранить изменения
+            </Button>
+          </Group>
+        </form>
+      </Container>
     </MainLayout>
   );
 };
 
-export default CreateNews;
+export default AccountSettings;

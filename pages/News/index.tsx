@@ -1,13 +1,12 @@
 import React from "react";
-import HeaderAuth from "../../Components/HeaderAuth";
-import { Button, Center, Group, Text } from "@mantine/core";
+import { Button, Center, Flex, Group, Text, TextInput } from "@mantine/core";
 import Link from "next/link";
-import { IconArrowRightRhombus } from "@tabler/icons";
+import { IconArrowRightRhombus, IconSearch } from "@tabler/icons";
+import MainLayout from "../../Components/MainLayout";
 
 const News = () => {
   return (
-    <div>
-      <HeaderAuth isAuth={false} />
+    <MainLayout>
       <Group mt={10} ml={30}>
         <Text c={"dimmed"} component={Link} href={"/"}>
           Главная
@@ -20,10 +19,13 @@ const News = () => {
           Новости
         </Text>
       </Center>
-      <Button component={Link} href={"/News/CreateNews"} color={"teal"}>
-        Создать новость
-      </Button>
-    </div>
+      <Flex direction={"column"} align={"flex-start"} ml={30}>
+        <TextInput placeholder={"Поиск"} icon={<IconSearch />} mb={20} />
+        <Button component={Link} href={"/News/CreateNews"} color={"teal"}>
+          Создать новость
+        </Button>
+      </Flex>
+    </MainLayout>
   );
 };
 
