@@ -10,6 +10,7 @@ import {
 } from "@mantine/core";
 import { Header as MantineHeader } from "@mantine/core";
 import {
+  IconCheck,
   IconLogout,
   IconMoonStars,
   IconSettings,
@@ -17,14 +18,30 @@ import {
   IconTrash,
   IconUserCircle,
 } from "@tabler/icons";
-import ThemeContext from "../context";
+import ThemeContext from "../Context/context";
 import Link from "next/link";
-import { showNotification } from "@mantine/notifications";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { useRouter } from "next/router";
+import AuthContext from "../Context/AuthContext";
+import UserContext from "../Context/UserContext";
 
-const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
+const HeaderAuth = () => {
+  // @ts-ignore
+  const [isAuth, setIsAuth] = useContext(AuthContext);
   // @ts-ignore
   const [theme, setTheme] = useContext(ThemeContext);
+  const [checkSwitch, setCheckSwitch] = React.useState<boolean | undefined>(
+    undefined
+  );
+  const router = useRouter();
 
+  React.useEffect(() => {
+    if (typeof window !== undefined) {
+      if (localStorage.getItem("checkedSwitch") === "true") {
+        setCheckSwitch(true);
+      }
+    } else setCheckSwitch(false);
+  }, []);
   const handleTheme = () => {
     if (theme == "light") {
       setTheme("dark");
@@ -35,6 +52,8 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
         title: "Переключение темы...",
         message: "Установлена темная тема",
       });
+      setCheckSwitch(false);
+      localStorage.setItem("checkedSwitch", "false");
     } else {
       setTheme("light");
       localStorage.setItem("theme", "light");
@@ -44,9 +63,41 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
         title: "Переключение темы...",
         message: "Установлена светлая тема",
       });
+      setCheckSwitch(true);
+      localStorage.setItem("checkedSwitch", "true");
     }
   };
   const themeMantine = useMantineTheme();
+  // @ts-ignore
+  const [userInfo, setUserInfo] = useContext(UserContext);
+  const logout = () => {
+    setUserInfo([""]);
+    setIsAuth(false);
+    showNotification({
+      id: "load-data",
+      loading: true,
+      title: "Выход из аккаунта...",
+      message: "Идет завершение сессии",
+      autoClose: false,
+      disallowClose: true,
+      radius: "xl",
+    });
+
+    setTimeout(() => {
+      updateNotification({
+        id: "load-data",
+        color: "teal",
+        title: "Успешно",
+        message: "Вы успешно вышли из аккаунта",
+        icon: <IconCheck size={16} />,
+        autoClose: 2000,
+        radius: "xl",
+      });
+    }, 1000);
+    setTimeout(() => {
+      router.push("/Auth/SignIn");
+    }, 1200);
+  };
   return (
     <MantineHeader height={100}>
       <Group mt={10} ml={30} mr={30} position={"apart"}>
@@ -66,7 +117,7 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
                     mt={15}
                     size={"md"}
                   >
-                    Аккаунт
+                    {userInfo[0]}
                   </Button>
                 </Menu.Target>
 
@@ -79,7 +130,11 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
                   >
                     Настроить аккаунт
                   </Menu.Item>
-                  <Menu.Item color="red" icon={<IconLogout size={14} />}>
+                  <Menu.Item
+                    color="red"
+                    icon={<IconLogout size={14} />}
+                    onClick={logout}
+                  >
                     Выйти из аккаунта
                   </Menu.Item>
                 </Menu.Dropdown>
@@ -122,6 +177,7 @@ const HeaderAuth = ({ isAuth }: { isAuth: boolean }) => {
                 color={themeMantine.colors.blue[6]}
               />
             }
+            checked={checkSwitch}
           />
         </Group>
       </Group>

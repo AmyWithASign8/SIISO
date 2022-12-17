@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Button,
   Center,
@@ -10,10 +10,21 @@ import {
   Title,
 } from "@mantine/core";
 import MainLayout from "../../../Components/MainLayout";
-import { IconAt, IconLock, IconUser } from "@tabler/icons";
+import {
+  IconAt,
+  IconCheck,
+  IconError404,
+  IconLock,
+  IconSun,
+  IconUser,
+} from "@tabler/icons";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { registration } from "../../../http/userAPI";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import AuthContext from "../../../Components/Context/AuthContext";
+import UserContext from "../../../Components/Context/UserContext";
 
 type Inputs = {
   nickname: string;
@@ -21,6 +32,10 @@ type Inputs = {
   password: string;
 };
 const SignUp = () => {
+  // @ts-ignore
+  const [userInfo, setUserInfo] = useContext(UserContext);
+  // @ts-ignore
+  const [isAuth, setIsAuth] = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -29,10 +44,48 @@ const SignUp = () => {
   } = useForm<Inputs>();
   const router = useRouter();
 
-  const handleSignUp = () => {
-    router.push("/");
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    signUp(data.nickname, data.email, data.password);
+  const signUp = async (nickname: string, email: string, password: string) => {
+    try {
+      const response = await registration(nickname, email, password);
+      console.log(response);
+      setUserInfo([nickname, email, password]);
+
+      showNotification({
+        id: "load-data",
+        loading: true,
+        title: "Сохранение данных...",
+        message: "Идет сохранение ваших данных",
+        autoClose: false,
+        disallowClose: true,
+        radius: "xl",
+      });
+
+      setTimeout(() => {
+        updateNotification({
+          id: "load-data",
+          color: "teal",
+          title: "Авторизация прошла успешно",
+          message: "Вы успешно авторизованы",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+          radius: "xl",
+        });
+      }, 1000);
+      setTimeout(() => {
+        setIsAuth(true);
+        router.push("/");
+      }, 1200);
+    } catch (e) {
+      showNotification({
+        icon: <IconError404 />,
+        radius: "xl",
+        title: "Ошибка",
+        message: "Что-то пошло не так",
+      });
+    }
   };
-  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignUp();
   return (
     <MainLayout>
       <Container>
@@ -72,7 +125,7 @@ const SignUp = () => {
             {...register("password", {
               required: true,
               minLength: 8,
-              pattern: /[^A-Za-z0-9]/,
+              pattern: /[^А-Яа-я0-9]/,
             })}
           />
           <Center mt={50}>

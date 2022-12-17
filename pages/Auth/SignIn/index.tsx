@@ -9,17 +9,25 @@ import {
   TextInput,
 } from "@mantine/core";
 import MainLayout from "../../../Components/MainLayout";
-import { IconAt, IconLock } from "@tabler/icons";
+import { IconAt, IconCheck, IconError404, IconLock } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import ThemeContext from "../../../Components/context";
+import ThemeContext from "../../../Components/Context/context";
 import Link from "next/link";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { check, login } from "../../../http/userAPI";
+import UserContext from "../../../Components/Context/UserContext";
+import AuthContext from "../../../Components/Context/AuthContext";
 
 type Inputs = {
   email: string;
   password: string;
 };
 const SignIn = () => {
+  // @ts-ignore
+  const [userInfo, setUserInfo] = useContext(UserContext);
+  // @ts-ignore
+  const [isAuth, setIsAuth] = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -27,10 +35,48 @@ const SignIn = () => {
     formState: { errors },
   } = useForm<Inputs>();
   const router = useRouter();
-  const handleSignIn = () => {
-    router.push("/");
+  const signin = async (email: string, password: string) => {
+    try {
+      const response = await login(email, password);
+      // @ts-ignore
+      setUserInfo([response.nicname, response.email]);
+      console.log(response);
+      setIsAuth(true);
+      showNotification({
+        id: "load-data",
+        loading: true,
+        title: "Сохранение данных...",
+        message: "Идет сохранение ваших данных",
+        autoClose: false,
+        disallowClose: true,
+        radius: "xl",
+      });
+
+      setTimeout(() => {
+        updateNotification({
+          id: "load-data",
+          color: "teal",
+          title: "Авторизация прошла успешно",
+          message: "Вы успешно авторизованы",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+          radius: "xl",
+        });
+      }, 1000);
+      setTimeout(() => {
+        router.push("/");
+      }, 1200);
+    } catch (e) {
+      showNotification({
+        icon: <IconError404 />,
+        radius: "xl",
+        title: "Ошибка",
+        message: "Неверный логин или пароль",
+      });
+    }
   };
-  const onSubmit: SubmitHandler<Inputs> = (data) => handleSignIn();
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    signin(data.email, data.password);
 
   return (
     <MainLayout>
@@ -62,7 +108,7 @@ const SignIn = () => {
             {...register("password", {
               required: true,
               minLength: 8,
-              pattern: /[^A-Za-z0-9]/,
+              pattern: /[^А-Яа-я0-9]/,
             })}
           />
           <Center mt={50}>
