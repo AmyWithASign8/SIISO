@@ -24,12 +24,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import MainLayout from "../../../Components/MainLayout";
+import { createNews } from "../../../http/newsAPI";
 
 type Inputs = {
   nameNews: string;
   description: string;
 };
 const CreateNews = () => {
+  const [file, setFile] = React.useState("");
   const {
     register,
     handleSubmit,
@@ -40,34 +42,41 @@ const CreateNews = () => {
   const themeMantine = useMantineTheme();
 
   const route = useRouter();
-  const handleCreatePost = () => {
-    showNotification({
-      id: "load-data",
-      loading: true,
-      title: "Загрузка...",
-      message: "Идет загрузка вашего поста",
-      autoClose: false,
-      disallowClose: true,
-      radius: "xl",
-    });
-
-    setTimeout(() => {
-      updateNotification({
+  const handleCreatePost = async (title: string, description: string) => {
+    try {
+      let imageUrl = null;
+      const response = await createNews(title, description, imageUrl);
+      console.log(response);
+      showNotification({
         id: "load-data",
-        color: "teal",
-        title: "Загрузка завершена",
-        message: "Ваш пост успешно загружен",
-        icon: <IconCheck size={16} />,
-        autoClose: 2000,
+        loading: true,
+        title: "Загрузка...",
+        message: "Идет загрузка вашего поста",
+        autoClose: false,
+        disallowClose: true,
         radius: "xl",
       });
-    }, 1000);
-    setTimeout(() => {
-      route.push("/News");
-    }, 1200);
-  };
-  const onSubmit: SubmitHandler<Inputs> = (data) => handleCreatePost();
 
+      setTimeout(() => {
+        updateNotification({
+          id: "load-data",
+          color: "teal",
+          title: "Загрузка завершена",
+          message: "Ваш пост успешно загружен",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+          radius: "xl",
+        });
+      }, 1000);
+      setTimeout(() => {
+        route.push("/News");
+      }, 1200);
+    } catch (e) {}
+  };
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    handleCreatePost(data.nameNews, data.description);
+
+  // @ts-ignore
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
