@@ -52,13 +52,19 @@ const News = () => {
             <Card.Section withBorder inheritPadding py="xs">
               <Group position="apart">
                 <Text weight={500} size={"xl"}>
-                  {obj.title}
+                  {
+                    //@ts-ignore
+                    obj.title
+                  }
                 </Text>
               </Group>
             </Card.Section>
 
             <Text mt="sm" color="dimmed" size="lg">
-              {obj.description}
+              {
+                //@ts-ignore
+                obj.description
+              }
             </Text>
 
             <Card.Section inheritPadding mt="sm" pb="md">
