@@ -10,9 +10,12 @@ import {
 } from "@mantine/core";
 import { Header as MantineHeader } from "@mantine/core";
 import {
+  IconArticle,
   IconCheck,
+  IconInbox,
   IconLogout,
   IconMoonStars,
+  IconNews,
   IconSettings,
   IconSun,
   IconTrash,
@@ -71,8 +74,6 @@ const HeaderAuth = () => {
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
   const logout = () => {
-    setUserInfo([""]);
-    setIsAuth(false);
     showNotification({
       id: "load-data",
       loading: true,
@@ -96,6 +97,8 @@ const HeaderAuth = () => {
     }, 1000);
     setTimeout(() => {
       router.push("/Auth/SignIn");
+      setIsAuth(false);
+      setUserInfo([""]);
     }, 1200);
   };
   return (
@@ -139,15 +142,36 @@ const HeaderAuth = () => {
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
-              <Button
-                component={Link}
-                href={"/News"}
-                color={"teal"}
-                size={"md"}
-                mt={15}
-              >
-                Новости
-              </Button>
+              <Menu shadow="md" width={200}>
+                <Menu.Target>
+                  <Button
+                    color={"teal"}
+                    size={"md"}
+                    mt={15}
+                    leftIcon={<IconInbox />}
+                  >
+                    Новости
+                  </Button>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Menu.Label>Выберите тип новостей</Menu.Label>
+                  <Menu.Item
+                    component={Link}
+                    href={`/News/MyNews/${userInfo[2]}`}
+                    icon={<IconArticle size={14} />}
+                  >
+                    Мои новости
+                  </Menu.Item>
+                  <Menu.Item
+                    icon={<IconNews size={14} />}
+                    component={Link}
+                    href={"/News"}
+                  >
+                    Все новости
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
               <Button
                 component={Link}
                 href={"/Legends"}

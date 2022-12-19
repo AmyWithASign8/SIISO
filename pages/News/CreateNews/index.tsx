@@ -44,7 +44,7 @@ const CreateNews = () => {
   const route = useRouter();
   const handleCreatePost = async (title: string, description: string) => {
     try {
-      let imageUrl = null;
+      let imageUrl = ["017b596f-0065-4c43-bb8b-c2a835831612.jpg"];
       const response = await createNews(title, description, imageUrl);
       console.log(response);
       showNotification({

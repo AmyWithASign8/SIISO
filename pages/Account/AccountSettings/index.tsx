@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Button,
   Container,
@@ -22,6 +22,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import UserContext from "../../../Components/Context/UserContext";
 type Inputs = {
   nickname: string;
   email: string;
@@ -29,8 +30,9 @@ type Inputs = {
 };
 
 const AccountSettings = () => {
-  const [inputNickName, setInputNickName] =
-    React.useState<string>("ProfileName");
+  // @ts-ignore
+  const [userInfo, setUserInfo] = useContext(UserContext);
+  const [inputNickName, setInputNickName] = React.useState<string>(userInfo[0]);
   const route = useRouter();
   const {
     register,
@@ -69,6 +71,7 @@ const AccountSettings = () => {
     setInputNickName("ProfileName");
   };
   const themeMantine = useMantineTheme();
+
   const onSubmit: SubmitHandler<Inputs> = (data) => saveChanges();
   return (
     <MainLayout>

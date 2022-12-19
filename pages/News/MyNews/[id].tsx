@@ -1,33 +1,28 @@
 import React from "react";
+import MainLayout from "../../../Components/MainLayout";
+import { getAllNews, getUserNews } from "../../../http/newsAPI";
 import {
-  Button,
   Card,
   Center,
   Container,
-  Flex,
   Group,
-  Image,
   SimpleGrid,
   Text,
-  TextInput,
 } from "@mantine/core";
-import Link from "next/link";
-import { IconArrowRightRhombus, IconSearch } from "@tabler/icons";
-import MainLayout from "../../Components/MainLayout";
-import { getAllNews } from "../../http/newsAPI";
 import dayjs from "dayjs";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { IconArrowRightRhombus } from "@tabler/icons";
 
-const News = () => {
-  useSearchParams();
+const MyNews = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  console.log(id);
   const [dataNew, setDataNew] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    const dataNews = getAllNews().then((data) => setDataNew(data));
+    getUserNews(id).then((data) => setDataNew(data));
   }, []);
-  React.useEffect(() => {
-    console.log(dataNew);
-  }, [dataNew]);
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -35,20 +30,12 @@ const News = () => {
           Главная
         </Text>
         <IconArrowRightRhombus />
-        <Text color={"teal"}>Новости</Text>
+        <Text color={"teal"}>Мои новости</Text>
       </Group>
-      <Center mt={50}>
-        <Text size={50} weight={"bold"}>
-          Новости
-        </Text>
-      </Center>
-      <Flex direction={"column"} align={"flex-start"} ml={30}>
-        <TextInput placeholder={"Поиск"} icon={<IconSearch />} mb={20} />
-        <Button component={Link} href={"/News/CreateNews"} color={"teal"}>
-          Создать новость
-        </Button>
-      </Flex>
       <Container>
+        <Center mt={50}>
+          <Text size={40}>Ваши новости</Text>
+        </Center>
         {dataNew.map((obj) => (
           <Card withBorder shadow="sm" radius="md" mt={50}>
             <Card.Section withBorder inheritPadding py="xs">
@@ -81,4 +68,4 @@ const News = () => {
   );
 };
 
-export default News;
+export default MyNews;

@@ -1,6 +1,4 @@
 import Head from "next/head";
-import MainLayout from "../Components/MainLayout";
-import { useRouter } from "next/router";
 import HeaderAuth from "../Components/HeaderAuth";
 import React from "react";
 import { Center, Container, Text } from "@mantine/core";

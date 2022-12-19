@@ -6,8 +6,10 @@ import { NotificationsProvider } from "@mantine/notifications";
 import { DeepPartial } from "@mantine/styles/lib/theme/types/DeepPartial";
 import AuthContext from "../Components/Context/AuthContext";
 import UserContext from "../Components/Context/UserContext";
+import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
   React.useEffect(() => {
     if (typeof window !== undefined) {
       setTheme(localStorage.getItem("theme") as DeepPartial<ColorScheme>);
@@ -17,8 +19,10 @@ export default function App({ Component, pageProps }: AppProps) {
   const [isAuth, setIsAuth] = React.useState<boolean>(false);
   const [userInfo, setUserInfo] = React.useState<[""]>([""]);
   React.useEffect(() => {
-    console.log(userInfo);
-  }, [userInfo]);
+    if (!isAuth) {
+      router.push("/Auth/SignUp");
+    }
+  }, []);
   return (
     <ThemeContext.Provider value={[theme, setTheme]}>
       <UserContext.Provider value={[userInfo, setUserInfo]}>

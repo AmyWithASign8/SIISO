@@ -39,9 +39,9 @@ const SignIn = () => {
     try {
       const response = await login(email, password);
       // @ts-ignore
-      setUserInfo([response.nicname, response.email]);
+      setUserInfo([response.nicname, response.email, response.id]);
       console.log(response);
-      setIsAuth(true);
+
       showNotification({
         id: "load-data",
         loading: true,
@@ -65,6 +65,7 @@ const SignIn = () => {
       }, 1000);
       setTimeout(() => {
         router.push("/");
+        setIsAuth(true);
       }, 1200);
     } catch (e) {
       showNotification({

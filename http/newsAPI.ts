@@ -4,7 +4,7 @@ import jwtDecode from "jwt-decode";
 export const createNews = async (
   title: string,
   description: string,
-  imageUrl: any
+  imageUrl: string[]
 ) => {
   const { data } = await $authHost.post("api/news", {
     title,
@@ -15,5 +15,9 @@ export const createNews = async (
 };
 export const getAllNews = async () => {
   const { data } = await $host.get("api/news");
+  return data;
+};
+export const getUserNews = async (id: any) => {
+  const { data } = await $host.get("api/news/selected/" + id);
   return data;
 };
