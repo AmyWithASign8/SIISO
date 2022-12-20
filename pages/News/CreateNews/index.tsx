@@ -19,7 +19,12 @@ import {
   IconWriting,
   IconX,
 } from "@tabler/icons";
-import { Dropzone, IMAGE_MIME_TYPE, DropzoneProps } from "@mantine/dropzone";
+import {
+  Dropzone,
+  IMAGE_MIME_TYPE,
+  DropzoneProps,
+  FileWithPath,
+} from "@mantine/dropzone";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { showNotification, updateNotification } from "@mantine/notifications";
@@ -31,7 +36,7 @@ type Inputs = {
   description: string;
 };
 const CreateNews = () => {
-  const [file, setFile] = React.useState("");
+  const [file, setFile] = React.useState<FileWithPath[]>([]);
   const {
     register,
     handleSubmit,
@@ -44,8 +49,13 @@ const CreateNews = () => {
   const route = useRouter();
   const handleCreatePost = async (title: string, description: string) => {
     try {
-      let imageUrl = ["017b596f-0065-4c43-bb8b-c2a835831612.jpg"];
-      const response = await createNews(title, description, imageUrl);
+      let formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      file.forEach((file) => {
+        formData.append("imageUrl", file);
+      });
+      const response = await createNews(formData);
       console.log(response);
       showNotification({
         id: "load-data",
@@ -76,7 +86,7 @@ const CreateNews = () => {
   const onSubmit: SubmitHandler<Inputs> = (data) =>
     handleCreatePost(data.nameNews, data.description);
 
-  // @ts-ignore
+  console.log(IMAGE_MIME_TYPE);
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -120,7 +130,7 @@ const CreateNews = () => {
           </Input.Wrapper>
           <Input.Wrapper label={"Прикрепление фотографий"}>
             <Dropzone
-              onDrop={(files) => console.log("accepted files", files)}
+              onDrop={(files) => setFile(files)}
               onReject={(files) => console.log("rejected files", files)}
               maxSize={3 * 1024 ** 2}
               accept={IMAGE_MIME_TYPE}

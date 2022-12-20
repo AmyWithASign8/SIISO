@@ -27,3 +27,13 @@ export const check = async () => {
   const { data } = await $authHost.get("api/user/auth");
   return jwtDecode(data.token);
 };
+export const getOneUser = async (id: any) => {
+  const { data } = await $authHost.get("api/user/" + id);
+  return data;
+};
+export const updateUser = async (id: any, nickname: string) => {
+  const { data } = await $authHost.post("api/user/updateinfo/" + id, {
+    nickname,
+  });
+  return data;
+};

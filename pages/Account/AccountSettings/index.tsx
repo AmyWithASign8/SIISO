@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import UserContext from "../../../Components/Context/UserContext";
+import { updateUser } from "../../../http/userAPI";
 type Inputs = {
   nickname: string;
   email: string;
@@ -40,39 +41,45 @@ const AccountSettings = () => {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const saveChanges = () => {
-    showNotification({
-      id: "load-data",
-      loading: true,
-      title: "Сохранение изменений...",
-      message: "Идет сохранение ваших изменений",
-      autoClose: false,
-      disallowClose: true,
-      radius: "xl",
-    });
-
-    setTimeout(() => {
-      updateNotification({
+  const saveChanges = async (nickname: string) => {
+    try {
+      const response = await updateUser(userInfo[2], nickname);
+      console.log(response);
+      showNotification({
         id: "load-data",
-        color: "teal",
-        title: "Успешно сохранено",
-        message: "Ваши изменения успешно сохранены",
-        icon: <IconCheck size={16} />,
-        autoClose: 2000,
+        loading: true,
+        title: "Сохранение изменений...",
+        message: "Идет сохранение ваших изменений",
+        autoClose: false,
+        disallowClose: true,
         radius: "xl",
       });
-    }, 1000);
-    setTimeout(() => {
-      route.push("/");
-    }, 1200);
+
+      setTimeout(() => {
+        updateNotification({
+          id: "load-data",
+          color: "teal",
+          title: "Успешно сохранено",
+          message: "Ваши изменения успешно сохранены",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+          radius: "xl",
+        });
+      }, 1000);
+      setTimeout(() => {
+        route.push("/");
+      }, 1200);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const clearChanges = () => {
-    setInputNickName("ProfileName");
+    setInputNickName(userInfo[0]);
   };
   const themeMantine = useMantineTheme();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => saveChanges();
+  const onSubmit: SubmitHandler<Inputs> = (data) => saveChanges(data.nickname);
   return (
     <MainLayout>
       <Group mt={10} ml={30}>

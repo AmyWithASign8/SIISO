@@ -74,6 +74,7 @@ const HeaderAuth = () => {
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
   const logout = () => {
+    localStorage.removeItem("token");
     showNotification({
       id: "load-data",
       loading: true,

@@ -17,6 +17,11 @@ import MainLayout from "../../Components/MainLayout";
 import { getAllNews } from "../../http/newsAPI";
 import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
+import "dayjs/locale/ru";
+
+export interface ImagesOnNews {
+  imageUrl: string;
+}
 
 const News = () => {
   useSearchParams();
@@ -24,6 +29,7 @@ const News = () => {
 
   React.useEffect(() => {
     const dataNews = getAllNews().then((data) => setDataNew(data));
+    console.log(dataNews);
   }, []);
   React.useEffect(() => {
     console.log(dataNew);
@@ -50,31 +56,51 @@ const News = () => {
       </Flex>
       <Container>
         {dataNew.map((obj) => (
-          <Card withBorder shadow="sm" radius="md" mt={50}>
-            <Card.Section withBorder inheritPadding py="xs">
-              <Group position="apart">
-                <Text weight={500} size={"xl"}>
-                  {obj.title}
-                </Text>
-                <Text>
-                  Дата публикации:{" "}
-                  {dayjs(obj.createdAt).format("DD MMMM YYYY HH:mm")}
-                </Text>
-              </Group>
-            </Card.Section>
+          <>
+            <Text mt={50}>Пользователь: {obj.user.nickname}</Text>
+            <Card withBorder shadow="sm" radius="md" mt={10}>
+              <Card.Section withBorder inheritPadding py="xs">
+                <Group position="apart">
+                  <Text weight={500} size={"xl"}>
+                    {obj.title}
+                  </Text>
 
-            <Text mt="sm" color="dimmed" size="lg">
-              {obj.description}
-            </Text>
+                  <Text>
+                    Дата публикации:
+                    {dayjs(obj.createdAt)
+                      .locale("ru")
+                      .format("DD MMMM YYYY HH:mm")}
+                  </Text>
+                </Group>
+              </Card.Section>
 
-            <Card.Section inheritPadding mt="sm" pb="md">
-              <SimpleGrid cols={3}>
-                {/*{images.map((image) => (*/}
-                {/*  <Image src={image} key={image} radius="sm" />*/}
-                {/*))}*/}
-              </SimpleGrid>
-            </Card.Section>
-          </Card>
+              <Text mt="sm" color="dimmed" size="lg">
+                {obj.description}
+              </Text>
+
+              <Card.Section inheritPadding mt="sm" pb="md">
+                <SimpleGrid cols={3}>
+                  {obj.news_images.length > 1
+                    ? obj.news_images.map((image: ImagesOnNews) => (
+                        <Image
+                          src={`http://localhost:5000/${image.imageUrl}`}
+                          width={"250px"}
+                          height={"250px"}
+                          key={image.imageUrl}
+                          radius="sm"
+                        />
+                      ))
+                    : obj.news_images.map((image: ImagesOnNews) => (
+                        <Image
+                          src={`http://localhost:5000/${image.imageUrl}`}
+                          key={image.imageUrl}
+                          radius="sm"
+                        />
+                      ))}
+                </SimpleGrid>
+              </Card.Section>
+            </Card>
+          </>
         ))}
       </Container>
     </MainLayout>

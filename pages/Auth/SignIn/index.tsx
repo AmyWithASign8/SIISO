@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import {
   Button,
   Center,
+  Checkbox,
   Container,
   Input,
   PasswordInput,
@@ -18,12 +19,17 @@ import { showNotification, updateNotification } from "@mantine/notifications";
 import { check, login } from "../../../http/userAPI";
 import UserContext from "../../../Components/Context/UserContext";
 import AuthContext from "../../../Components/Context/AuthContext";
-
+import RememberMeContext from "../../../Components/Context/RememberMe";
 type Inputs = {
   email: string;
   password: string;
 };
 const SignIn = () => {
+  // @ts-ignore
+  const [rememberMe, setRememberMe] = useContext(RememberMeContext);
+  React.useEffect(() => {
+    console.log(rememberMe);
+  }, [rememberMe]);
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
   // @ts-ignore
@@ -37,10 +43,14 @@ const SignIn = () => {
   const router = useRouter();
   const signin = async (email: string, password: string) => {
     try {
-      const response = await login(email, password);
-      // @ts-ignore
-      setUserInfo([response.nicname, response.email, response.id]);
+      const response: any = await login(email, password);
       console.log(response);
+      setUserInfo([
+        response.nickname,
+        response.email,
+        response.id,
+        response.role,
+      ]);
 
       showNotification({
         id: "load-data",
@@ -78,7 +88,7 @@ const SignIn = () => {
   };
   const onSubmit: SubmitHandler<Inputs> = (data) =>
     signin(data.email, data.password);
-
+  console.log(userInfo);
   return (
     <MainLayout>
       <Container>
@@ -112,7 +122,17 @@ const SignIn = () => {
               pattern: /[^А-Яа-я0-9]/,
             })}
           />
-          <Center mt={50}>
+          <Checkbox
+            label="Запомнить меня"
+            color="teal"
+            mt={40}
+            size={"md"}
+            checked={rememberMe}
+            onClick={() =>
+              rememberMe ? setRememberMe(false) : setRememberMe(true)
+            }
+          />
+          <Center mt={30}>
             <Button
               variant="gradient"
               gradient={{ from: "teal", to: "lime", deg: 105 }}

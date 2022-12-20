@@ -6,6 +6,7 @@ import {
   Center,
   Container,
   Group,
+  Image,
   SimpleGrid,
   Text,
 } from "@mantine/core";
@@ -13,6 +14,7 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { IconArrowRightRhombus } from "@tabler/icons";
+import { ImagesOnNews } from "../index";
 
 const MyNews = () => {
   const router = useRouter();
@@ -21,8 +23,12 @@ const MyNews = () => {
   const [dataNew, setDataNew] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-    getUserNews(id).then((data) => setDataNew(data));
+    getUserNews(id).then((data) => {
+      setDataNew(data);
+      console.log(data);
+    });
   }, []);
+
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -44,7 +50,7 @@ const MyNews = () => {
                   {obj.title}
                 </Text>
                 <Text>
-                  Дата публикации:{" "}
+                  Дата публикации:
                   {dayjs(obj.createdAt).format("DD MMMM YYYY HH:mm")}
                 </Text>
               </Group>
@@ -56,9 +62,15 @@ const MyNews = () => {
 
             <Card.Section inheritPadding mt="sm" pb="md">
               <SimpleGrid cols={3}>
-                {/*{images.map((image) => (*/}
-                {/*  <Image src={image} key={image} radius="sm" />*/}
-                {/*))}*/}
+                {obj.news_images.map((image: ImagesOnNews) => (
+                  <Image
+                    src={`http://localhost:5000/${image.imageUrl}`}
+                    width={"250px"}
+                    height={"250px"}
+                    key={image.imageUrl}
+                    radius="sm"
+                  />
+                ))}
               </SimpleGrid>
             </Card.Section>
           </Card>
