@@ -31,9 +31,12 @@ export const getOneUser = async (id: any) => {
   const { data } = await $authHost.get("api/user/" + id);
   return data;
 };
-export const updateUser = async (id: any, nickname: string) => {
+export const updateUser = async (id: number, nickname: string) => {
   const { data } = await $authHost.post("api/user/updateinfo/" + id, {
     nickname,
   });
   return data;
+};
+export const deleteUser = async (id: number) => {
+  const response = await $host.delete("api/user/deleteuser/" + id);
 };

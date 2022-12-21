@@ -21,12 +21,12 @@ import {
   IconTrash,
   IconUserCircle,
 } from "@tabler/icons";
-import ThemeContext from "../Context/context";
+import ThemeContext from "../../Context/context";
 import Link from "next/link";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { useRouter } from "next/router";
-import AuthContext from "../Context/AuthContext";
-import UserContext from "../Context/UserContext";
+import AuthContext from "../../Context/AuthContext";
+import UserContext from "../../Context/UserContext";
 
 const HeaderAuth = () => {
   // @ts-ignore

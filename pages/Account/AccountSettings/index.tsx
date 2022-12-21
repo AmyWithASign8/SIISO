@@ -22,8 +22,10 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification, updateNotification } from "@mantine/notifications";
-import UserContext from "../../../Components/Context/UserContext";
-import { updateUser } from "../../../http/userAPI";
+import UserContext from "../../../Context/UserContext";
+import { deleteUser, updateUser } from "../../../http/userAPI";
+import { openConfirmModal } from "@mantine/modals";
+import AuthContext from "../../../Context/AuthContext";
 type Inputs = {
   nickname: string;
   email: string;
@@ -31,6 +33,8 @@ type Inputs = {
 };
 
 const AccountSettings = () => {
+  // @ts-ignore
+  const [isAuth, setIsAuth] = useContext(AuthContext);
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
   const [inputNickName, setInputNickName] = React.useState<string>(userInfo[0]);
@@ -80,6 +84,57 @@ const AccountSettings = () => {
   const themeMantine = useMantineTheme();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => saveChanges(data.nickname);
+
+  const deleteAccount = async (id: number) => {
+    try {
+      showNotification({
+        id: "load-data",
+        loading: true,
+        title: "Удалени данных...",
+        message: "Идет удаление ваших данных",
+        autoClose: false,
+        disallowClose: true,
+        radius: "xl",
+      });
+
+      setTimeout(() => {
+        updateNotification({
+          id: "load-data",
+          color: "teal",
+          title: "Удаление прошло успешно",
+          message:
+            "Ваш аккаунт успешно удален, сейчас вы будете переадресованы на страинцу регистрации",
+          icon: <IconCheck size={16} />,
+          autoClose: 2000,
+          radius: "xl",
+        });
+      }, 1000);
+      setTimeout(() => {
+        route.push("/Auth/SignUp");
+        setIsAuth(false);
+      }, 1200);
+      deleteUser(id);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const openDeleteModal = () => {
+    openConfirmModal({
+      title: "Удаление аккаунта",
+      centered: true,
+      children: (
+        <Text size="sm">
+          Вы уверены что хотите удалить ваш аккаунт?Восстановить его будет
+          невозможно!
+        </Text>
+      ),
+      labels: { confirm: "Удалить", cancel: "Отмена" },
+      confirmProps: { color: "red" },
+      onCancel: () => console.log("Cancel"),
+      onConfirm: () => deleteAccount(userInfo[2]),
+    });
+  };
+
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -157,6 +212,9 @@ const AccountSettings = () => {
           <Group position={"center"} mt={50}>
             <Button color={"gray"} component={Link} href={"/"}>
               На главную
+            </Button>
+            <Button onClick={openDeleteModal} color="red">
+              Удалить аккаунт
             </Button>
             <Button color={"red"} onClick={clearChanges}>
               Сбросить

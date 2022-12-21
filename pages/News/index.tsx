@@ -18,9 +18,13 @@ import { getAllNews } from "../../http/newsAPI";
 import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
 import "dayjs/locale/ru";
+import { openModal } from "@mantine/modals";
 
 export interface ImagesOnNews {
   imageUrl: string;
+}
+interface objNewsInterface {
+  obj: any;
 }
 
 const News = () => {
@@ -34,6 +38,13 @@ const News = () => {
   React.useEffect(() => {
     console.log(dataNew);
   }, [dataNew]);
+
+  const viewImage = (imgSrc: string) => {
+    openModal({
+      title: "Фото",
+      children: <Image src={imgSrc}></Image>,
+    });
+  };
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -55,9 +66,12 @@ const News = () => {
         </Button>
       </Flex>
       <Container>
-        {dataNew.map((obj) => (
+        {dataNew.map<any>((obj) => (
           <>
-            <Text mt={50}>Пользователь: {obj.user.nickname}</Text>
+            <Text mt={50}>
+              Автор:{" "}
+              {obj.user === null ? "Аккаунт был удален" : obj.user.nickname}
+            </Text>
             <Card withBorder shadow="sm" radius="md" mt={10}>
               <Card.Section withBorder inheritPadding py="xs">
                 <Group position="apart">
@@ -83,6 +97,10 @@ const News = () => {
                   {obj.news_images.length > 1
                     ? obj.news_images.map((image: ImagesOnNews) => (
                         <Image
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            viewImage(`http://localhost:5000/${image.imageUrl}`)
+                          }
                           src={`http://localhost:5000/${image.imageUrl}`}
                           width={"250px"}
                           height={"250px"}
@@ -92,6 +110,10 @@ const News = () => {
                       ))
                     : obj.news_images.map((image: ImagesOnNews) => (
                         <Image
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            viewImage(`http://localhost:5000/${image.imageUrl}`)
+                          }
                           src={`http://localhost:5000/${image.imageUrl}`}
                           key={image.imageUrl}
                           radius="sm"
@@ -99,6 +121,14 @@ const News = () => {
                       ))}
                 </SimpleGrid>
               </Card.Section>
+              <Button
+                component={Link}
+                href={`/News/PostPage/${obj.id}`}
+                fullWidth
+                color={"teal"}
+              >
+                Подробнее
+              </Button>
             </Card>
           </>
         ))}

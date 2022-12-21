@@ -23,8 +23,9 @@ import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { registration } from "../../../http/userAPI";
 import { showNotification, updateNotification } from "@mantine/notifications";
-import AuthContext from "../../../Components/Context/AuthContext";
-import UserContext from "../../../Components/Context/UserContext";
+import AuthContext from "../../../Context/AuthContext";
+import UserContext from "../../../Context/UserContext";
+import { closeModal, openContextModal, openModal } from "@mantine/modals";
 
 type Inputs = {
   nickname: string;
@@ -50,7 +51,6 @@ const SignUp = () => {
     try {
       const response = await registration(nickname, email, password);
       console.log(response);
-      setUserInfo([nickname, email, password]);
 
       showNotification({
         id: "load-data",
@@ -74,8 +74,26 @@ const SignUp = () => {
         });
       }, 1000);
       setTimeout(() => {
-        setIsAuth(true);
-        router.push("/");
+        openModal({
+          modalId: "signUpModal",
+          centered: true,
+          title:
+            "Ваш аккаунт зарегестрирован, теперь войдите в систему под своим аккаунтом",
+          children: (
+            <Button
+              color={"teal"}
+              fullWidth
+              onClick={() =>
+                router
+                  .push("/Auth/SignIn")
+                  .then(() => closeModal("signUpModal"))
+              }
+              mt="md"
+            >
+              Войти
+            </Button>
+          ),
+        });
       }, 1200);
     } catch (e) {
       showNotification({

@@ -13,13 +13,13 @@ import MainLayout from "../../../Components/MainLayout";
 import { IconAt, IconCheck, IconError404, IconLock } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from "react-hook-form";
-import ThemeContext from "../../../Components/Context/context";
+import ThemeContext from "../../../Context/context";
 import Link from "next/link";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { check, login } from "../../../http/userAPI";
-import UserContext from "../../../Components/Context/UserContext";
-import AuthContext from "../../../Components/Context/AuthContext";
-import RememberMeContext from "../../../Components/Context/RememberMe";
+import UserContext from "../../../Context/UserContext";
+import AuthContext from "../../../Context/AuthContext";
+import RememberMeContext from "../../../Context/RememberMe";
 type Inputs = {
   email: string;
   password: string;

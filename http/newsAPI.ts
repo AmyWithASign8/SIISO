@@ -13,3 +13,7 @@ export const getUserNews = async (id: any) => {
   const { data } = await $host.get(`api/news/selected/${id}`);
   return data;
 };
+export const getSelectedPost = async (id: any) => {
+  const { data } = await $host.get(`api/news/${id}`);
+  return data;
+};
