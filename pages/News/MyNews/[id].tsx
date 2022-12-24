@@ -56,7 +56,9 @@ const MyNews = ({ dataNew }: { dataNew: any }) => {
                   </Text>
                   <Text>
                     Дата публикации:
-                    {dayjs(obj.createdAt).format("DD MMMM YYYY HH:mm")}
+                    {dayjs(obj.createdAt)
+                      .locale("ru")
+                      .format("DD MMMM YYYY HH:mm")}
                   </Text>
                 </Group>
               </Card.Section>

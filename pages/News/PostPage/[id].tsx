@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import MainLayout from "../../../Components/MainLayout";
 import { useRouter } from "next/router";
 import PostContext from "../../../Context/PostContext";
-import { getSelectedPost } from "../../../http/newsAPI";
+import { getSelectedPost, getUserNews } from "../../../http/newsAPI";
 import {
   ActionIcon,
   Card,
@@ -29,8 +29,16 @@ import {
 import { ImagesOnNews } from "../index";
 import Link from "next/link";
 import UserContext from "../../../Context/UserContext";
+import { getAllComments } from "../../../http/commentsApi";
+import { GetServerSidePropsContext } from "next";
 
-const PostPage = () => {
+const PostPage = ({
+  dataPost,
+  dataComment,
+}: {
+  dataPost: any;
+  dataComment: any;
+}) => {
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
   const [like, setLike] = React.useState<boolean>(false);
@@ -39,31 +47,25 @@ const PostPage = () => {
   const router = useRouter();
   const { id } = router.query;
   React.useEffect(() => {
-    getSelectedPost(id).then((data) => {
-      console.log("полученный пост", data);
-      if (data === undefined) {
-        alert("Что то пошло не так");
-      } else {
-        data.map((obj: any) => {
-          setPostInfo({
-            title: obj.title,
-            description: obj.description,
-            createdAt: obj.createdAt,
-            userNickname: obj?.user?.nickname,
-            userEmail: obj?.user?.email,
-            newsImages: obj.news_images === undefined ? [] : obj.news_images,
-            postComments: obj.comments,
-            postLikes: obj.like_news,
-          });
-          console.log("das", obj.newsImages);
-        });
-      }
+    console.log("полученный пост", dataPost);
+    dataPost.map((obj: any) => {
+      setPostInfo({
+        title: obj.title,
+        description: obj.description,
+        createdAt: obj.createdAt,
+        userNickname: obj?.user?.nickname,
+        userEmail: obj?.user?.email,
+        newsImages: obj.news_images === undefined ? [] : obj.news_images,
+        postLikes: obj.like_news,
+      });
+      console.log("ЗАПИСЬ", obj.newsImages);
     });
     console.log("ID пользователя", userInfo[2]);
   }, []);
   // @ts-ignore
-  if (!postInfo.newsImages) return <MainLayout>loading...</MainLayout>;
-  console.log(postInfo);
+  if (postInfo.newsImages === undefined)
+    return <MainLayout>loading...</MainLayout>;
+  console.log("ДАТАКОММЕНТПОСТ", dataComment);
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -149,12 +151,54 @@ const PostPage = () => {
             <Text ml={30} size={"xl"}>
               Здесь вы можете оставить свой комментарий
             </Text>
-            <Input icon={<IconBallpen />} value={"Напишите свой комментарий"} />
+            <Input
+              size={"lg"}
+              icon={<IconBallpen />}
+              placeholder={"Напишите свой комментарий"}
+            />
+          </Card.Section>
+          <Card.Section>
+            <Text ml={40} size={"xl"}>
+              Комментарии:
+            </Text>
+          </Card.Section>
+          <Card.Section>
+            {dataComment.map(
+              ({
+                id,
+                comment,
+                createdAt,
+                user,
+              }: {
+                id: number;
+                comment: string;
+                createdAt: string;
+                user: {
+                  nickname: string;
+                };
+              }) => (
+                <div key={id}>
+                  <Text size={"xl"} color={"teal"} ml={30}>
+                    {user.nickname}
+                  </Text>
+                  <Center>
+                    <Text size={"xl"}>{comment}</Text>
+                  </Center>
+                </div>
+              )
+            )}
           </Card.Section>
         </Card>
       </Container>
     </MainLayout>
   );
 };
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  console.log("АЙДИ", ctx.query.id);
+  const dataPost = await getSelectedPost(ctx.query.id);
+  const dataComment = await getAllComments(ctx.query.id);
+
+  return { props: { dataPost, dataComment } };
+}
 
 export default PostPage;

@@ -14,11 +14,12 @@ import {
 import Link from "next/link";
 import { IconArrowRightRhombus, IconSearch } from "@tabler/icons";
 import MainLayout from "../../Components/MainLayout";
-import { getAllNews } from "../../http/newsAPI";
+import { getAllNews, getUserNews } from "../../http/newsAPI";
 import dayjs from "dayjs";
 import { useSearchParams } from "next/navigation";
 import "dayjs/locale/ru";
 import { openModal } from "@mantine/modals";
+import { GetServerSidePropsContext } from "next";
 
 export interface ImagesOnNews {
   imageUrl: string;
@@ -136,5 +137,4 @@ const News = () => {
     </MainLayout>
   );
 };
-
 export default News;
