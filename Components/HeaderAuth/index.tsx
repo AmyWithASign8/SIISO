@@ -75,6 +75,10 @@ const HeaderAuth = () => {
   const [userInfo, setUserInfo] = useContext(UserContext);
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("email");
+    localStorage.removeItem("id");
+    localStorage.removeItem("role");
     showNotification({
       id: "load-data",
       loading: true,

@@ -15,6 +15,10 @@ import {
   Center,
   Title,
   Input,
+  Divider,
+  ScrollArea,
+  Paper,
+  Blockquote,
 } from "@mantine/core";
 import {
   IconArrowRightRhombus,
@@ -31,6 +35,7 @@ import Link from "next/link";
 import UserContext from "../../../Context/UserContext";
 import { getAllComments } from "../../../http/commentsApi";
 import { GetServerSidePropsContext } from "next";
+import dayjs from "dayjs";
 
 const PostPage = ({
   dataPost,
@@ -62,6 +67,7 @@ const PostPage = ({
     });
     console.log("ID пользователя", userInfo[2]);
   }, []);
+  console.log(dataComment);
   // @ts-ignore
   if (postInfo.newsImages === undefined)
     return <MainLayout>loading...</MainLayout>;
@@ -79,7 +85,7 @@ const PostPage = ({
         <IconArrowRightRhombus />
         <Text color={"teal"}>{postInfo.title}</Text>
       </Group>
-      <Container size={"xl"} mt={100}>
+      <Container size={"xl"} mt={60}>
         <Card withBorder shadow="sm" radius="md">
           <Card.Section withBorder inheritPadding py="xs">
             <Group position="apart">
@@ -152,42 +158,70 @@ const PostPage = ({
               Здесь вы можете оставить свой комментарий
             </Text>
             <Input
-              size={"lg"}
+              variant="unstyled"
+              size={"xl"}
               icon={<IconBallpen />}
               placeholder={"Напишите свой комментарий"}
             />
           </Card.Section>
-          <Card.Section>
-            <Text ml={40} size={"xl"}>
-              Комментарии:
-            </Text>
-          </Card.Section>
-          <Card.Section>
-            {dataComment.map(
-              ({
-                id,
-                comment,
-                createdAt,
-                user,
-              }: {
-                id: number;
-                comment: string;
-                createdAt: string;
-                user: {
-                  nickname: string;
-                };
-              }) => (
-                <div key={id}>
-                  <Text size={"xl"} color={"teal"} ml={30}>
-                    {user.nickname}
-                  </Text>
-                  <Center>
-                    <Text size={"xl"}>{comment}</Text>
-                  </Center>
-                </div>
-              )
-            )}
-          </Card.Section>
+          {dataComment.length < 1 ? (
+            <>
+              <Divider />
+              <Center mt={10}>
+                <Text size={"xl"}>
+                  К данному посту комментариев нет, напишите первый комментарий!
+                </Text>
+              </Center>
+            </>
+          ) : (
+            <>
+              <Card.Section>
+                <Text ml={40} size={"xl"}>
+                  Комментарии:
+                </Text>
+                <Divider my="sm" />
+              </Card.Section>
+              <Card.Section>
+                {dataComment.map(
+                  ({
+                    id,
+                    comment,
+                    createdAt,
+                    user,
+                  }: {
+                    id: number;
+                    comment: string;
+                    createdAt: string;
+                    user: {
+                      nickname: string;
+                    };
+                  }) => (
+                    <div key={id}>
+                      <Group position={"apart"} mr={10}>
+                        <Text size={"xl"} color={"teal"} ml={30}>
+                          {user.nickname}
+                        </Text>
+                        <Text size={"md"}>
+                          Комментарий создан:{" "}
+                          {dayjs(createdAt)
+                            .locale("ru")
+                            .format("DD MMMM YYYY HH:mm")}
+                        </Text>
+                      </Group>
+                      <Center>
+                        <ScrollArea>
+                          <Blockquote color="green">
+                            <Text size={"xl"}>{comment}</Text>
+                          </Blockquote>
+                        </ScrollArea>
+                      </Center>
+                      <Divider my="sm" />
+                    </div>
+                  )
+                )}
+              </Card.Section>
+            </>
+          )}
         </Card>
       </Container>
     </MainLayout>

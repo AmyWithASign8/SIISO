@@ -37,6 +37,7 @@ const AccountSettings = () => {
   const [isAuth, setIsAuth] = useContext(AuthContext);
   // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
+  console.log("инфа о пользователе с страницы настройки акк", userInfo);
   const [inputNickName, setInputNickName] = React.useState<string>(userInfo[0]);
   const route = useRouter();
   const {
@@ -49,6 +50,7 @@ const AccountSettings = () => {
     try {
       const response = await updateUser(userInfo[2], nickname);
       console.log(response);
+
       showNotification({
         id: "load-data",
         loading: true,
@@ -69,6 +71,7 @@ const AccountSettings = () => {
           autoClose: 2000,
           radius: "xl",
         });
+        userInfo[0] = nickname;
       }, 1000);
       setTimeout(() => {
         route.push("/");

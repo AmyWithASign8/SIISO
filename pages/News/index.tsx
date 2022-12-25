@@ -43,7 +43,8 @@ const News = () => {
   const viewImage = (imgSrc: string) => {
     openModal({
       title: "Фото",
-      children: <Image src={imgSrc}></Image>,
+      centered: true,
+      children: <Image src={imgSrc} />,
     });
   };
   return (

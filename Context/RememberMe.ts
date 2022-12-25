@@ -1,5 +1,5 @@
 import { createContext } from "react";
 
-const RememberMeContext = createContext(false);
+const RememberMeContext = createContext<any>(false);
 
 export default RememberMeContext;

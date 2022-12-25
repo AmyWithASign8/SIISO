@@ -16,6 +16,8 @@ import { IconCheck, IconError404 } from "@tabler/icons";
 import RememberMeContext from "../Context/RememberMe";
 import { ModalsProvider } from "@mantine/modals";
 import PostContext from "../Context/PostContext";
+import { GetServerSidePropsContext } from "next";
+import { getUserNews } from "../http/newsAPI";
 
 export default function App({ Component, pageProps }: AppProps) {
   const [rememberMe, setRememberMe] = React.useState<boolean>(false);
@@ -25,32 +27,44 @@ export default function App({ Component, pageProps }: AppProps) {
       setTheme(localStorage.getItem("theme") as DeepPartial<ColorScheme>);
     } else setTheme("dark");
   }, []);
+  let userLocalStorageInfo;
+  if (typeof window !== "undefined") {
+    userLocalStorageInfo = [
+      localStorage.getItem("nickname"),
+      localStorage.getItem("email"),
+      localStorage.getItem("id"),
+      localStorage.getItem("role"),
+    ];
+  }
+
   const [theme, setTheme] = React.useState<DeepPartial<ColorScheme>>("dark");
   const [isAuth, setIsAuth] = React.useState<boolean>(false);
-  const [userInfo, setUserInfo] = React.useState<[""]>([""]);
+  // @ts-ignore
+  const [userInfo, setUserInfo] = React.useState<any>(userLocalStorageInfo);
   const [postInfo, setPostInfo] = React.useState<{}>({});
-  const userRemember = async (id: number) => {
-    try {
-      const response = await getOneUser(id);
-      // @ts-ignore
-      setUserInfo([response.nickname, response.email, response.id]);
-      console.log(response);
-    } catch (e) {}
-  };
   React.useEffect(() => {
-    if (rememberMe) {
-      check().then((data) => {
-        setIsAuth(true);
-        // @ts-ignore
-        userRemember(data.id);
-      });
-    }
+    if (
+      userInfo[0] !== null &&
+      userInfo[1] !== null &&
+      userInfo[2] !== null &&
+      userInfo[3] !== null
+    ) {
+      setIsAuth(true);
 
+      console.log("Инфа о пользователе", userInfo);
+      if (
+        (isAuth && router.pathname === "/Auth/SignIn") ||
+        (isAuth && router.pathname === "/Auth/SignUp")
+      ) {
+        router.push("/");
+      }
+    }
+  }, [isAuth, router.pathname]);
+  React.useEffect(() => {
     if (!isAuth) {
-      router.push("/Auth/SignUp");
+      router.push("/Auth/SignIn");
     }
   }, []);
-
   return (
     <ThemeContext.Provider value={[theme, setTheme]}>
       <UserContext.Provider value={[userInfo, setUserInfo]}>
@@ -79,4 +93,10 @@ export default function App({ Component, pageProps }: AppProps) {
       </UserContext.Provider>
     </ThemeContext.Provider>
   );
+}
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const data = await check();
+  console.log("asfaggag");
+  return { props: { dataNew: data } };
 }

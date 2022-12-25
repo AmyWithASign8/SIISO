@@ -25,14 +25,11 @@ type Inputs = {
   password: string;
 };
 const SignIn = () => {
-  // @ts-ignore
   const [rememberMe, setRememberMe] = useContext(RememberMeContext);
   React.useEffect(() => {
     console.log(rememberMe);
   }, [rememberMe]);
-  // @ts-ignore
   const [userInfo, setUserInfo] = useContext(UserContext);
-  // @ts-ignore
   const [isAuth, setIsAuth] = useContext(AuthContext);
   const {
     register,
@@ -51,6 +48,12 @@ const SignIn = () => {
         response.id,
         response.role,
       ]);
+      if (rememberMe) {
+        localStorage.setItem("nickname", response.nickname);
+        localStorage.setItem("email", response.email);
+        localStorage.setItem("id", response.id);
+        localStorage.setItem("role", response.role);
+      }
 
       showNotification({
         id: "load-data",
