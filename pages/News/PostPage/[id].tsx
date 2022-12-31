@@ -19,10 +19,13 @@ import {
   ScrollArea,
   Paper,
   Blockquote,
+  Button,
+  TextInput,
 } from "@mantine/core";
 import {
   IconArrowRightRhombus,
   IconBallpen,
+  IconCheck,
   IconDots,
   IconEye,
   IconFileZip,
@@ -33,10 +36,19 @@ import {
 import { ImagesOnNews } from "../index";
 import Link from "next/link";
 import UserContext from "../../../Context/UserContext";
-import { getAllComments } from "../../../http/commentsApi";
+import {
+  createNewComment,
+  getAllComments,
+  getOneComment,
+} from "../../../http/commentsApi";
 import { GetServerSidePropsContext } from "next";
 import dayjs from "dayjs";
-
+import { SubmitHandler, useForm } from "react-hook-form";
+import { userInfo } from "os";
+import { showNotification, updateNotification } from "@mantine/notifications";
+type Inputs = {
+  comment: string;
+};
 const PostPage = ({
   dataPost,
   dataComment,
@@ -44,10 +56,16 @@ const PostPage = ({
   dataPost: any;
   dataComment: any;
 }) => {
-  // @ts-ignore
+  let allCommentsInThisPost = dataComment;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const [inputComment, setInputComment] = React.useState<string>("");
   const [userInfo, setUserInfo] = useContext(UserContext);
   const [like, setLike] = React.useState<boolean>(false);
-  // @ts-ignore
   const [postInfo, setPostInfo] = useContext(PostContext);
   const router = useRouter();
   const { id } = router.query;
@@ -65,13 +83,40 @@ const PostPage = ({
       });
       console.log("ЗАПИСЬ", obj.newsImages);
     });
-    console.log("ID пользователя", userInfo[2]);
   }, []);
-  console.log(dataComment);
-  // @ts-ignore
+
   if (postInfo.newsImages === undefined)
     return <MainLayout>loading...</MainLayout>;
-  console.log("ДАТАКОММЕНТПОСТ", dataComment);
+  const onSubmit: SubmitHandler<Inputs> = (data) =>
+    createCommentFunc(data.comment);
+  const createCommentFunc = async (comment: string) => {
+    const createComment = await createNewComment(id, userInfo[2], comment);
+    console.log("СОЗДАННЫЙ КОММЕНТ", createComment);
+    const createdComment = await getOneComment(createComment.id);
+    console.log("ОДИН КОММ ПОЛУЧЕН", createdComment);
+    showNotification({
+      id: "load-data",
+      loading: true,
+      title: "Загрузка...",
+      message: "Идет загрузка вашего комментария",
+      autoClose: false,
+      disallowClose: true,
+      radius: "xl",
+    });
+
+    setTimeout(() => {
+      updateNotification({
+        id: "load-data",
+        color: "teal",
+        title: "Загрузка завершена",
+        message: "Ваш комментарий успешно загружен",
+        icon: <IconCheck size={16} />,
+        autoClose: 2000,
+        radius: "xl",
+      });
+    }, 1000);
+    dataComment.unshift(createdComment);
+  };
   return (
     <MainLayout>
       <Group mt={10} ml={30}>
@@ -157,12 +202,25 @@ const PostPage = ({
             <Text ml={30} size={"xl"}>
               Здесь вы можете оставить свой комментарий
             </Text>
-            <Input
-              variant="unstyled"
-              size={"xl"}
-              icon={<IconBallpen />}
-              placeholder={"Напишите свой комментарий"}
-            />
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Group position={"apart"}>
+                <TextInput
+                  style={{ width: "1000px" }}
+                  variant="unstyled"
+                  size={"xl"}
+                  icon={<IconBallpen />}
+                  placeholder={"Напишите свой комментарий"}
+                  error={errors.comment && "Некорректный пароль"}
+                  {...register("comment", {
+                    required: true,
+                  })}
+                />
+                <Button type={"submit"} mr={80} color={"teal"}>
+                  Отправить
+                </Button>
+              </Group>
+            </form>
           </Card.Section>
           {dataComment.length < 1 ? (
             <>
