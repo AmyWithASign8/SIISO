@@ -1,3 +1,13 @@
+To-do сайт где можно выкладывать новости и оставлять к ним комментарии
+
+Стек: 
+1) React TypeScript
+2) NextJS
+3) Axios
+4) Mantine
+
+Сборщик: Webpack
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
